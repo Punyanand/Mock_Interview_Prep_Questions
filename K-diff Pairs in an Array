@@ -1,0 +1,19 @@
+class Solution:
+    def findPairs(self, nums: List[int], k: int) -> int:
+        if k < 0:  
+            return 0
+        dictA = {}
+        count = 0
+        for num in nums:
+            dictA[num] = dictA.get(num, 0) + 1
+        for key in dictA:
+            if k == 0:
+                # For k = 0, we need at least two occurrences of the same number
+                if dictA[key] > 1:
+                    count += 1
+            else:
+                # For k > 0, check if the complement (key + k) exists in the dictionary
+                if key + k in dictA:
+                    count += 1
+        
+        return count
