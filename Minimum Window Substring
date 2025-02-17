@@ -1,0 +1,46 @@
+#time complexity = O(m+n)
+#space complexity = O(n)
+from collections import Counter
+
+class Solution:
+    def minWindow(self, s: str, t: str) -> str:
+        if not s or not t:
+            return ""
+
+        #Store character counts of `t`
+        target_count = Counter(t)
+        required = len(target_count)  
+        left, right = 0, 0  
+        formed = 0  
+        window_count = {}  
+        min_length = float("inf")  
+        min_window = ""  
+
+        while right < len(s):
+            
+            char = s[right]
+            window_count[char] = window_count.get(char, 0) + 1
+
+            
+            if char in target_count and window_count[char] == target_count[char]:
+                formed += 1
+
+            # shrink the window 
+            while left <= right and formed == required:
+                char = s[left]
+
+                # Update minimum length 
+                if right - left + 1 < min_length:
+                    min_length = right - left + 1
+                    min_window = s[left:right+1]
+
+                
+                window_count[char] -= 1
+                if char in target_count and window_count[char] < target_count[char]:
+                    formed -= 1  
+
+                left += 1  
+
+            right += 1  
+
+        return min_window
