@@ -1,0 +1,40 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.metrics import confusion_matrix, accuracy_score, classification_report
+from sklearn.preprocessing import LabelEncoder
+
+# 1: Load dataset
+data = pd.read_csv('email50.csv')
+
+# 2: Prepare features and labels
+y = data['spam']
+X = data.drop(columns=['spam', 'time'])  # Dropping 'time' because it's not numerical
+
+# 3: Encode all object (categorical) columns
+label_encoders = {}
+for column in X.columns:
+    if X[column].dtype == 'object':
+        le = LabelEncoder()
+        X[column] = le.fit_transform(X[column])
+        label_encoders[column] = le  # Save encoder for future use (inverse transform etc.)
+
+# 4: Split the data
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+#5: Train the model
+model = MultinomialNB()
+model.fit(X_train, y_train)
+
+#6: Predictions
+y_pred = model.predict(X_test)
+
+#7: Evaluation
+print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
+print("\nAccuracy Score:", accuracy_score(y_test, y_pred))
+print("\nClassification Report:\n", classification_report(y_test, y_pred))
+
+#8: Prediction
+sample = X_test.iloc[0:1]
+sample_pred = model.predict(sample)
+print("\nSample Prediction:", "Spam" if sample_pred[0] == 1 else "Not Spam")
